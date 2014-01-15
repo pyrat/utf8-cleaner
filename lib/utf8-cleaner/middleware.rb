@@ -15,7 +15,11 @@ module UTF8Cleaner
     end
 
     def call(env)
-     @app.call(sanitize_env(env))
+      if valid_env?(env)
+        @app.call(env)
+      else
+        return [400, {'Content-Type' => 'text/html', 'Content-Length' => '11'}, ['Bad Request']]
+      end
     end
 
     private
@@ -34,6 +38,16 @@ module UTF8Cleaner
         env[key] = URIString.new(value).cleaned
       end
       env
+    end
+
+    def valid_env?(env)
+      SANITIZE_ENV_KEYS.all? do |key|
+        if value = env[key]
+          URIString.new(value).valid?
+        else
+          true
+        end
+      end
     end
   end
 end
