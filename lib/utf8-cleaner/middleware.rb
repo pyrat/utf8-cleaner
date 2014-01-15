@@ -31,9 +31,7 @@ module UTF8Cleaner
       SANITIZE_ENV_KEYS.each do |key|
         next unless value = env[key]
 
-        if value.include?('%')
-          env[key] = URIString.new(value).cleaned
-        end
+        env[key] = URIString.new(value).cleaned
       end
       env
     end
