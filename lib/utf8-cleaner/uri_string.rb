@@ -73,7 +73,7 @@ module UTF8Cleaner
     def valid_uri_encoded_utf8(string)
       string.empty? ||
       (
-        string.match(/^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$/) &&
+        string.ascii_only? &&
         URI.decode(string).force_encoding('UTF-8').valid_encoding?
       )
     end
