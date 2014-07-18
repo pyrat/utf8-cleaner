@@ -7,7 +7,6 @@ module UTF8Cleaner
      "QUERY_STRING",
      "REQUEST_PATH",
      "REQUEST_URI",
-     "rack.input",
      "rack.request.form_vars"
     ]
 
