@@ -2,12 +2,7 @@ module UTF8Cleaner
   class Middleware
 
     SANITIZE_ENV_KEYS = [
-     "HTTP_REFERER",
-     "PATH_INFO",
-     "QUERY_STRING",
-     "REQUEST_PATH",
-     "REQUEST_URI",
-     "rack.request.form_vars"
+      "rack.input"
     ]
 
     def initialize(app)
@@ -15,7 +10,7 @@ module UTF8Cleaner
     end
 
     def call(env)
-      if valid_env?(env)
+      if valid_rack_input?(env)
         @app.call(env)
       else
         return [400, {'Content-Type' => 'text/html', 'Content-Length' => '11'}, ['Bad Request']]
@@ -24,30 +19,17 @@ module UTF8Cleaner
 
     private
 
-    def is_valid_utf8(string)
-      utf8 = string.dup.force_encoding('UTF-8')
-      string == utf8 && utf8.valid_encoding?
-    rescue EncodingError
-      false
+    def is_valid_utf8?(string)
+      begin
+        utf8 = string.dup.force_encoding('UTF-8')
+        string == utf8 && utf8.valid_encoding?
+      rescue EncodingError
+        false
+      end
     end
 
-    def sanitize_env(env)
-      SANITIZE_ENV_KEYS.each do |key|
-        next unless value = env[key]
-
-        env[key] = URIString.new(value).cleaned
-      end
-      env
-    end
-
-    def valid_env?(env)
-      SANITIZE_ENV_KEYS.all? do |key|
-        if value = env[key]
-          URIString.new(value).valid?
-        else
-          true
-        end
-      end
+    def valid_rack_input?(env)
+      is_valid_utf8?(env["rack.input"].read)
     end
   end
 end
