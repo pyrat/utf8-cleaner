@@ -29,7 +29,15 @@ module UTF8Cleaner
     end
 
     def valid_rack_input?(env)
-      is_valid_utf8?(env["rack.input"].read)
+      io = env["rack.input"]
+      is_valid = true
+      if io
+        is_valid = is_valid_utf8?(io.read)
+        io.rewind
+        env["rack.input"] = StringIO.new(io.read)
+      else
+        # do nothing
+      end
     end
   end
 end
