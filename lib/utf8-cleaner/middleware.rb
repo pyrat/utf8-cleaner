@@ -38,6 +38,7 @@ module UTF8Cleaner
       else
         # do nothing
       end
+      is_valid
     end
   end
 end
