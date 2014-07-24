@@ -21,7 +21,7 @@ module UTF8Cleaner
     def valid_rack_input?(env)
       io = env["rack.input"]
       is_valid = true
-      if io && env["CONTENT_TYPE"] = 'application/x-www-form-urlencoded'
+      if io && env["CONTENT_TYPE"] == 'application/x-www-form-urlencoded'
         is_valid = is_valid_utf8?(io.read)
         io.rewind
         env["rack.input"] = StringIO.new(io.read)
